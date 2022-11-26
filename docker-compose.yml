@@ -1,0 +1,57 @@
+version: "3.9"
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  web:
+    build:
+      dockerfile: ./docker/web/Dockerfile
+    ports:
+      - "80"
+    links:
+      - php
+    volumes:
+      - .:/app
+      - "cache:/app/var/cache"
+    depends_on:
+      - php
+      - db
+    environment:
+      - VIRTUAL_HOST=forum.localhost
+    networks:
+      default:
+        aliases:
+          - forum.localhost
+
+  db:
+    image: mysql:8.0
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: forum
+      MYSQL_USER: forum
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    tmpfs:
+      - /var/lib/mysql:rw,size=256m,mode=177
+
+  php:
+    build: docker/php
+    working_dir: /app
+    volumes:
+      - .:/app
+      - "cache:/app/var/cache"
+    links:
+      - db
+
+volumes:
+  cache:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: "tmpfs"
+      o: size=1024m,uid=1000
