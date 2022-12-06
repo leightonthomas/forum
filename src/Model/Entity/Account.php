@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\Index;
 
 #[ORM\Entity(repositoryClass: DoctrineAccountRepository::class)]
 #[ORM\Table(indexes: [new Index(columns: ['email_address_bidx'], name: 'email_address_bidx_idx')])]
-final class Account
+final class Account implements Persistent
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -82,5 +82,10 @@ final class Account
     public function getPassword(): HashedString
     {
         return $this->password;
+    }
+
+    public function getClaims(): array
+    {
+        return $this->claims;
     }
 }

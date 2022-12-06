@@ -40,7 +40,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-install pdo pdo_mysql zip
 RUN pecl install ast
-RUN pecl install xdebug
 
 COPY --from=composer "/usr/bin/composer" "/usr/bin/composer"
 

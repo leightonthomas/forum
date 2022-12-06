@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\DependencyInjection\Compiler\Crypto\Encryption\PhpEncryptionKeyPass;
+use App\DependencyInjection\Compiler\Transformer\ValidationCheckerPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
@@ -13,6 +13,6 @@ class Kernel extends BaseKernel
 
     protected function build(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new PhpEncryptionKeyPass());
+        $container->addCompilerPass(new ValidationCheckerPass());
     }
 }

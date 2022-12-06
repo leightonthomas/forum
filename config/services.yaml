@@ -1,24 +1,59 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
-parameters:
-
 services:
-    # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        autowire: false
+        autoconfigure: false
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+    _instanceof:
+        LeightonThomas\Validation\Checker\Checker:
+            tags:
+                - name: !php/const \App\DependencyInjection\Compiler\Transformer\ValidationCheckerPass::TAG
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    LeightonThomas\Validation\Checker\:
+        autowire: true
+        resource: '../vendor/leightonthomas/validation/src/Checker'
+
+    App\Validator\Checker\IsEmailAddressChecker: ~
+
+    App\Crypto\Encryption\Entity\AccountEncryptor:
+        arguments:
+            - '@Psr\Log\LoggerInterface'
+            - '%env(CIPHERSWEET_KEY)%'
+
+    App\Crypto\Hashing\BcryptPasswordHashingMethod: ~
+
+    crypto.hashing.entity.account.password_hashing_method:
+        alias: 'App\Crypto\Hashing\BcryptPasswordHashingMethod'
+
+    App\Model\Repository\Entity\AccountRepository:
+        alias: 'App\Repository\Entity\DoctrineAccountRepository'
+
+    App\Repository\Entity\DoctrineAccountRepository:
+        factory: ['@doctrine.orm.default_entity_manager', 'getRepository']
+        arguments:
+            - 'App\Model\Entity\Account'
+
+    LeightonThomas\Validation\ValidatorFactory: ~
+
+    App\Transformer\Controller\Public\V1\Account\RegistrationRequestTransformer:
+        arguments:
+            - '@LeightonThomas\Validation\ValidatorFactory'
+
+    App\Controller\Public\V1\Account\RegistrationController:
+        arguments:
+            - '@Psr\Log\LoggerInterface'
+            - '@App\Transformer\Controller\Public\V1\Account\RegistrationRequestTransformer'
+            - '@App\Crypto\Encryption\Entity\AccountEncryptor'
+            - '@crypto.hashing.entity.account.password_hashing_method'
+            - '@App\Model\Repository\Entity\AccountRepository'
+        tags:
+            - controller.service_arguments
+
+    App\Controller\GenericJsonRouteController:
+        tags:
+            - controller.service_arguments
+
+    App\EventSubscriber\Controller\JsonRouteSubscriber:
+        arguments:
+            - '@App\Controller\GenericJsonRouteController'
+        tags:
+            - kernel.event_subscriber

@@ -1,0 +1,10 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Entity;
+
+interface Persistent
+{
+    public function getId(): string;
+}
