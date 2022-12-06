@@ -1,0 +1,145 @@
+openapi: 3.1.0
+x-stoplight:
+  id: j15aicciwjys2
+info:
+  title: Forum
+  version: '1.0'
+  contact:
+    name: Leighton Thomas
+    url: 'https://github.com/leightonthomas/forum'
+  description: Forum API.
+servers:
+  - url: 'http://forum.localhost'
+    description: Development
+paths:
+  /public/v1/account:
+    post:
+      tags: []
+      summary: Register Account
+      operationId: public-v1-account
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                required:
+                  - id
+              examples:
+                Example:
+                  value:
+                    id: 5eac02b6-490f-4c2b-b57b-773ff1ca3a4a
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+                    properties:
+                      id:
+                        type: array
+                        items:
+                          type: string
+                      username:
+                        type: array
+                        items:
+                          type: string
+                      emailAddress:
+                        type: array
+                        items:
+                          type: string
+                      password:
+                        type: array
+                        items:
+                          type: string
+                required:
+                  - errors
+              examples:
+                Example:
+                  value:
+                    errors:
+                      id:
+                        - There is already an account with this ID.
+        '406':
+          description: Not Acceptable
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              examples:
+                Example:
+                  value:
+                    - application/json
+                    - '*/*'
+        '415':
+          description: Unsupported Media Type
+          headers:
+            Accept:
+              schema:
+                type: string
+              description: application/json
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                required:
+                  - errors
+              examples:
+                Example:
+                  value:
+                    errors:
+                      - There was a problem processing your request. Please try again later.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                username:
+                  type: string
+                  pattern: '^[a-zA-Z0-9_\-]{3,30}'
+                  minLength: 3
+                  maxLength: 30
+                emailAddress:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  pattern: '^[\p{L}\p{P}\p{S}\p{N} ]{12,128}'
+                  minLength: 12
+                  maxLength: 128
+              required:
+                - id
+                - username
+                - emailAddress
+                - password
+            examples:
+              Example:
+                value:
+                  id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                  username: erica
+                  emailAddress: user@example.com
+                  password: some fake password
+        description: Post the necessary fields for the API to create a new user.
+      description: Register a new Account.
+    parameters: []
