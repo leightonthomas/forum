@@ -113,11 +113,19 @@ class RegistrationTest extends ApiTestCase
                     'password' => 'test!!!123456',
                 ],
             ],
-            'existing email' => [
+            'existing email #1' => [
                 [
                     'id' => '5d0707dd-3b5d-4f7b-af59-96e79137d3c7',
                     'username' => 'test',
                     'emailAddress' => 'bob@example.com',
+                    'password' => 'test!!!123456',
+                ],
+            ],
+            'existing email #2 - case makes no difference' => [
+                [
+                    'id' => '5d0707dd-3b5d-4f7b-af59-96e79137d3c7',
+                    'username' => 'test',
+                    'emailAddress' => 'bOb@ExAmPlE.cOm',
                     'password' => 'test!!!123456',
                 ],
             ],

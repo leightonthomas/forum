@@ -18,6 +18,7 @@ use ParagonIE\CipherSweet\EncryptedRow;
 use ParagonIE\CipherSweet\Exception\ArrayKeyException;
 use ParagonIE\CipherSweet\Exception\CryptoOperationException;
 use ParagonIE\CipherSweet\KeyProvider\StringProvider;
+use ParagonIE\CipherSweet\Transformation\Lowercase;
 use ParagonIE\HiddenString\HiddenString;
 use Psr\Log\LoggerInterface;
 use SensitiveParameter;
@@ -125,7 +126,7 @@ class AccountEncryptor
             $this->row->addTextField('email_address', 'id');
             $this->row->addBlindIndex(
                 'email_address',
-                new BlindIndex('email_address_bidx'),
+                new BlindIndex('email_address_bidx', [new Lowercase()]),
             );
         }
 

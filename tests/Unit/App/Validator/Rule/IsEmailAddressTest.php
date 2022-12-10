@@ -18,6 +18,7 @@ class IsEmailAddressTest extends TestCase
         self::assertSame(
             [
                 IsEmailAddress::ERR_INVALID => 'This value must be a valid email address.',
+                IsEmailAddress::ERR_NOT_STRING => 'This value must be a string.',
             ],
             $instance->getMessages(),
         );
@@ -32,6 +33,7 @@ class IsEmailAddressTest extends TestCase
         self::assertSame(
             [
                 IsEmailAddress::ERR_INVALID => "my new msg",
+                IsEmailAddress::ERR_NOT_STRING => 'This value must be a string.',
             ],
             $instance->getMessages(),
         );

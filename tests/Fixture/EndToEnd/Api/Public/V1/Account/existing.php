@@ -15,9 +15,9 @@ return static function (ContainerInterface $container): array {
 
     $ericaEncrypted = $encryptor->encrypt(
         '4231002c-a796-41aa-90b8-947d12a49114',
-        new HiddenString('erica@example.com'),
+        new HiddenString('ERICA@example.com'),
     );
-    $bobEncrypted = $encryptor->encrypt('9afbee8b-303f-4582-a260-b6552810bd33', new HiddenString('bob@example.com'));
+    $bobEncrypted = $encryptor->encrypt('9afbee8b-303f-4582-a260-b6552810bd33', new HiddenString('Bob@ExAmPlE.com'));
 
     $erica = new Account(
         '4231002c-a796-41aa-90b8-947d12a49114',
