@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Transformer\Controller\Public\V1\Account;
+namespace Tests\Integration\App\Transformer\Controller\Public\V1\Account;
 
 use App\Model\Exception\Transformer\TransformationFailed;
 use App\Transformer\Controller\Public\V1\Account\RegistrationRequestTransformer;
