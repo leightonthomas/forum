@@ -8,6 +8,7 @@ use App\Model\Primitive\HashedString;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
+use function is_string;
 
 class HashedStringType extends Type
 {
@@ -18,6 +19,10 @@ class HashedStringType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform): HashedString
     {
+        if (! is_string($value)) {
+            throw ConversionException::conversionFailed($value, $this->getName());
+        }
+
         return new HashedString($value);
     }
 

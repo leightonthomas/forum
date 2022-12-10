@@ -16,7 +16,7 @@ class ValidationCheckerPass implements CompilerPassInterface
 {
     public const TAG = 'lt_validation.checker';
 
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $factoryClass = ValidatorFactory::class;
         if (! $container->has($factoryClass)) {
@@ -25,7 +25,7 @@ class ValidationCheckerPass implements CompilerPassInterface
 
         $factory = $container->getDefinition(ValidatorFactory::class);
 
-        foreach ($container->findTaggedServiceIds(self::TAG) as $serviceId => $tags) {
+        foreach ($container->findTaggedServiceIds(self::TAG) as $serviceId => $_) {
             $factory->addMethodCall('register', [new Reference($serviceId)]);
         }
     }

@@ -44,6 +44,7 @@ class RegistrationRequestTransformer
         }
 
         try {
+            /** @psalm-suppress MixedAssignment */
             $decodedData = JsonHelper::decode($rawData);
         } catch (JsonException) {
             throw new TransformationFailed(['Invalid JSON.']);
@@ -91,11 +92,20 @@ class RegistrationRequestTransformer
 
         $validatedData = $validationResult->getValue();
 
+        /** @var string $id */
+        $id = $validatedData['id'];
+        /** @var string $username */
+        $username = $validatedData['username'];
+        /** @var string $emailAddress */
+        $emailAddress = $validatedData['emailAddress'];
+        /** @var string $password */
+        $password = $validatedData['password'];
+
         return new RegistrationRequest(
-            $validatedData['id'],
-            $validatedData['username'],
-            new HiddenString(strtolower($validatedData['emailAddress'])),
-            new HiddenString($validatedData['id'] . $validatedData['password']),
+            $id,
+            $username,
+            new HiddenString(strtolower($emailAddress)),
+            new HiddenString($id . $password),
         );
     }
 }

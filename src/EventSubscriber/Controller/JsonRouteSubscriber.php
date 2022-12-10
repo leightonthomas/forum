@@ -8,6 +8,7 @@ use App\Controller\GenericJsonRouteController;
 use App\Model\Attribute\Controller\JsonRoute;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionNamedType;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,11 +68,12 @@ class JsonRouteSubscriber implements EventSubscriberInterface
         $hasRequestArgument = (
             (count($arguments) > 0)
             && ($arguments[0]->hasType())
+            && ($arguments[0]->getType() instanceof ReflectionNamedType)
             && ($arguments[0]->getType()->getName() === Request::class)
         );
 
         $event->setController(
-            function (Request $request) use ($controller, $hasRequestArgument): Response {
+            function (Request $request) use ($controller, $hasRequestArgument, $controllerClass): Response {
                 $invalidResponse = $this->jsonRouteController->route($request);
                 if ($invalidResponse instanceof Response) {
                     return $invalidResponse;
@@ -82,9 +84,18 @@ class JsonRouteSubscriber implements EventSubscriberInterface
                     $rawArgs = array_slice($rawArgs, 1);
                 }
 
-                // we don't know ahead of time what arguments the controller might have (other than request, of course)
-                // so use this method to get them all dynamically and forward them on to the original controller
-                return $controller(...$rawArgs);
+                /**
+                 * we don't know ahead of time what arguments the controller might have (other than request, of course)
+                 * so use this method to get them all dynamically and forward them on to the original controller
+                 *
+                 * @psalm-suppress MixedAssignment
+                 */
+                $result = $controller(...$rawArgs);
+                if (! ($result instanceof Response)) {
+                    throw new RuntimeException("Controller '$controllerClass' returned non-Response");
+                }
+
+                return $result;
             },
         );
     }

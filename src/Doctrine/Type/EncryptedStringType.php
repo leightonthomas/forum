@@ -8,6 +8,7 @@ use App\Model\Primitive\EncryptedString;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
+use function is_string;
 
 class EncryptedStringType extends Type
 {
@@ -18,6 +19,10 @@ class EncryptedStringType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform): EncryptedString
     {
+        if (! is_string($value)) {
+            throw ConversionException::conversionFailed($value, $this->getName());
+        }
+
         return new EncryptedString($value);
     }
 

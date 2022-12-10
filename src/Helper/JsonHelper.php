@@ -17,12 +17,16 @@ enum JsonHelper
      * @param string $json
      * @param int $depth
      *
-     * @return array|string|float|int|bool|null
+     * @return mixed
      *
      * @throws JsonException
+     *
+     * @psalm-suppress MixedReturnStatement
+     * @psalm-suppress MixedInferredReturnType
      */
-    public static function decode(string $json, int $depth = 10): array|string|float|int|bool|null
+    public static function decode(string $json, int $depth = 10): mixed
     {
+        /** @psalm-suppress MixedReturnStatement */
         return json_decode($json, true, $depth, JSON_THROW_ON_ERROR);
     }
 }

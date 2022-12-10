@@ -11,10 +11,14 @@ use App\Model\Repository\Entity\AccountRepository;
 use Doctrine\ORM\EntityRepository;
 use Throwable;
 
+/**
+ * @extends EntityRepository<Account>
+ */
 class DoctrineAccountRepository extends EntityRepository implements AccountRepository
 {
     public function exists(string $id, string $username, HashedString $emailAddressBlindIndex): bool
     {
+        /** @var Account|null $result */
         $result = $this->createQueryBuilder('a')
             ->select('a')
             ->where('a.id = :id')

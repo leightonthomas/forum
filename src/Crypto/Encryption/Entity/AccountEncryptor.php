@@ -20,8 +20,21 @@ use ParagonIE\CipherSweet\Exception\CryptoOperationException;
 use ParagonIE\CipherSweet\KeyProvider\StringProvider;
 use ParagonIE\HiddenString\HiddenString;
 use Psr\Log\LoggerInterface;
+use SensitiveParameter;
 use SodiumException;
 
+/**
+ * @psalm-type _EncryptedData = array{
+ *     0: array{
+ *         email_address: string,
+ *     },
+ *     1: array{
+ *         email_address_bidx: array{
+ *             value: string,
+ *         },
+ *     },
+ * }
+ */
 class AccountEncryptor
 {
     private readonly LoggerInterface $logger;
@@ -54,6 +67,7 @@ class AccountEncryptor
         $row = $this->getRowConfig();
 
         try {
+            /** @var _EncryptedData $encryptedData */
             $encryptedData = $row->prepareRowForStorage(
                 [
                     'id' => $id,
@@ -95,8 +109,11 @@ class AccountEncryptor
 
         $this->logger->notice("Account [{$account->getId()}] decrypted");
 
+        /** @var string $emailAddress */
+        $emailAddress = $decryptedData['email_address'];
+
         return new AccountDecryptionResult(
-            new HiddenString($decryptedData['email_address']),
+            new HiddenString($emailAddress),
         );
     }
 
