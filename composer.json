@@ -81,8 +81,10 @@
     "require-dev": {
         "bentools/cartesian-product": "^1.4",
         "doctrine/data-fixtures": "^1.5",
+        "guzzlehttp/guzzle": "^7.5",
         "phpunit/phpunit": "^10",
         "psalm/phar": "^5.1",
+        "symfony/browser-kit": "6.1.*",
         "symfony/phpunit-bridge": "^6.1"
     }
 }

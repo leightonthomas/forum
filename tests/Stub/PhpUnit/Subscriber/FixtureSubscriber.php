@@ -29,7 +29,10 @@ use function is_array;
 use function is_callable;
 use function ltrim;
 use function rtrim;
+use function sprintf;
 use function str_ends_with;
+use function str_starts_with;
+use function substr;
 
 /**
  * @psalm-type FixtureCallable = callable(ContainerInterface):array
@@ -96,14 +99,21 @@ class FixtureSubscriber implements PreparedSubscriber
             throw new RuntimeException("Fixtures must be raw .php files that return a callable.");
         }
 
-        $fixtureCallable = $this->resolveFixture(
-            sprintf(
-                '%s/%s/%s',
-                rtrim($this->rootFixtureDirectory, '/'),
-                rtrim(ltrim($fixtureDirectoryAttribute->directory, '/'), '/'),
-                $fixtureAttribute->fixtureName,
-            ),
+        $fixturePath = sprintf(
+            '%s/%s/%s',
+            rtrim($this->rootFixtureDirectory, '/'),
+            rtrim(ltrim($fixtureDirectoryAttribute->directory, '/'), '/'),
+            $fixtureAttribute->fixtureName,
         );
+        if (str_starts_with($fixtureAttribute->fixtureName, './')) {
+            $fixturePath = sprintf(
+                '%s/%s',
+                rtrim($this->rootFixtureDirectory, '/'),
+                substr($fixtureAttribute->fixtureName, 2),
+            );
+        }
+
+        $fixtureCallable = $this->resolveFixture($fixturePath);
 
         $container = $this->getContainer($reflectedClass);
         $entityManager = $container->get('doctrine.orm.default_entity_manager');

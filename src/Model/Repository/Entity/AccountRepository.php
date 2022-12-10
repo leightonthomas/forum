@@ -29,4 +29,6 @@ interface AccountRepository
      * @throws FailedToPersist
      */
     public function save(Account $account): void;
+
+    public function findById(string $id): ?Account;
 }

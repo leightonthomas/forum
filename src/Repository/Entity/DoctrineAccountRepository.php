@@ -9,6 +9,7 @@ use App\Model\Exception\Repository\FailedToPersist;
 use App\Model\Primitive\HashedString;
 use App\Model\Repository\Entity\AccountRepository;
 use Doctrine\ORM\EntityRepository;
+use Ramsey\Uuid\Uuid;
 use Throwable;
 
 /**
@@ -16,6 +17,15 @@ use Throwable;
  */
 class DoctrineAccountRepository extends EntityRepository implements AccountRepository
 {
+    public function findById(string $id): ?Account
+    {
+        if (! Uuid::isValid($id)) {
+            return null;
+        }
+
+        return $this->find($id);
+    }
+
     public function exists(string $id, string $username, HashedString $emailAddressBlindIndex): bool
     {
         /** @var Account|null $result */
