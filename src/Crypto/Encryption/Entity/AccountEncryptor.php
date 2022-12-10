@@ -11,6 +11,7 @@ use App\Model\Exception\Crypto\Encryption\EncryptionMethod\DecryptionFailure;
 use App\Model\Exception\Crypto\Encryption\EncryptionMethod\EncryptionFailure;
 use App\Model\Primitive\EncryptedString;
 use App\Model\Primitive\HashedString;
+use App\Transformer\Crypto\CipherSweet\PaddingTransformer;
 use ParagonIE\CipherSweet\Backend\ModernCrypto;
 use ParagonIE\CipherSweet\BlindIndex;
 use ParagonIE\CipherSweet\CipherSweet;
@@ -136,11 +137,11 @@ class AccountEncryptor
             $this->row->addTextField('username', 'id');
             $this->row->addBlindIndex(
                 'email_address',
-                new BlindIndex('email_address_bidx', [new Lowercase()]),
+                new BlindIndex('email_address_bidx', [new Lowercase(), new PaddingTransformer(255)]),
             );
             $this->row->addBlindIndex(
                 'username',
-                new BlindIndex('username_bidx', [new Lowercase()]),
+                new BlindIndex('username_bidx', [new Lowercase(), new PaddingTransformer(255)]),
             );
         }
 
