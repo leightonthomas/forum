@@ -6,7 +6,7 @@ namespace App\Model\Controller\Public\V1\Account;
 
 use ParagonIE\HiddenString\HiddenString;
 
-final class RegistrationRequest
+readonly class RegistrationRequest
 {
     public function __construct(
         public readonly string $id,

@@ -12,6 +12,6 @@ use Attribute;
  * things like Content-Type and Accept headers/
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class JsonRoute
+class JsonRoute
 {
 }

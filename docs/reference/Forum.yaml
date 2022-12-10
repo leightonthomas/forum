@@ -143,3 +143,34 @@ paths:
         description: Post the necessary fields for the API to create a new user.
       description: Register a new Account.
     parameters: []
+  /public/v1/subforum:
+    get:
+      summary: List SubForums
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                  required:
+                    - id
+                    - name
+              examples:
+                Example:
+                  value:
+                    - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                      name: General Discussion
+                    - id: 05b19b0d-2751-42a9-aaae-9bb735461ff0
+                      name: Entertainment
+      operationId: public_subforum_list
+      description: List all SubForums.

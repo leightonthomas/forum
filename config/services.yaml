@@ -32,6 +32,14 @@ services:
         arguments:
             - 'App\Model\Entity\Account'
 
+    App\Model\Repository\Entity\SubForumRepository:
+        alias: 'App\Repository\Entity\DoctrineSubForumRepository'
+
+    App\Repository\Entity\DoctrineSubForumRepository:
+        factory: ['@doctrine.orm.default_entity_manager', 'getRepository']
+        arguments:
+            - 'App\Model\Entity\SubForum'
+
     LeightonThomas\Validation\ValidatorFactory: ~
 
     App\Transformer\Controller\Public\V1\Account\RegistrationRequestTransformer:
@@ -45,6 +53,12 @@ services:
             - '@App\Crypto\Encryption\Entity\AccountEncryptor'
             - '@crypto.hashing.entity.account.password_hashing_method'
             - '@App\Model\Repository\Entity\AccountRepository'
+        tags:
+            - controller.service_arguments
+
+    App\Controller\Public\V1\SubForum\ListController:
+        arguments:
+            - '@App\Model\Repository\Entity\SubForumRepository'
         tags:
             - controller.service_arguments
 
