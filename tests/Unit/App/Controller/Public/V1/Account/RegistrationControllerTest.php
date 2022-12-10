@@ -135,7 +135,7 @@ class RegistrationControllerTest extends TestCase
         $request = new Request();
         $registrationRequest = new RegistrationRequest(
             'a',
-            'b',
+            new HiddenString('b'),
             new HiddenString('c'),
             new HiddenString('d'),
         );
@@ -150,7 +150,7 @@ class RegistrationControllerTest extends TestCase
         $this->encryptor
             ->expects(self::once())
             ->method('encrypt')
-            ->with('a', $registrationRequest->emailAddress)
+            ->with('a', $registrationRequest->username, $registrationRequest->emailAddress)
             ->willThrowException(new EncryptionFailure('oh no'))
         ;
 
@@ -176,11 +176,13 @@ class RegistrationControllerTest extends TestCase
         $request = new Request();
         $registrationRequest = new RegistrationRequest(
             'a',
-            'b',
+            new HiddenString('b'),
             new HiddenString('c'),
             new HiddenString('d'),
         );
         $encryptedData = new AccountEncryptionResult(
+            new EncryptedString('encrypted b'),
+            new HashedString('username blind index'),
             new EncryptedString('encrypted c'),
             new HashedString('email blind index'),
         );
@@ -195,14 +197,14 @@ class RegistrationControllerTest extends TestCase
         $this->encryptor
             ->expects(self::once())
             ->method('encrypt')
-            ->with('a', $registrationRequest->emailAddress)
+            ->with('a', $registrationRequest->username, $registrationRequest->emailAddress)
             ->willReturn($encryptedData)
         ;
 
         $this->accountRepository
             ->expects(self::once())
             ->method('exists')
-            ->with('a', 'b', $encryptedData->emailAddressFullBlindIndex)
+            ->with('a', $encryptedData->usernameBlindIndex, $encryptedData->emailAddressFullBlindIndex)
             ->willReturn(true)
         ;
 
@@ -222,11 +224,13 @@ class RegistrationControllerTest extends TestCase
         $request = new Request();
         $registrationRequest = new RegistrationRequest(
             'a',
-            'b',
+            new HiddenString('b'),
             new HiddenString('c'),
             new HiddenString('d'),
         );
         $encryptedData = new AccountEncryptionResult(
+            new EncryptedString('encrypted b'),
+            new HashedString('username blind index'),
             new EncryptedString('encrypted c'),
             new HashedString('email blind index'),
         );
@@ -241,14 +245,14 @@ class RegistrationControllerTest extends TestCase
         $this->encryptor
             ->expects(self::once())
             ->method('encrypt')
-            ->with('a', $registrationRequest->emailAddress)
+            ->with('a', $registrationRequest->username, $registrationRequest->emailAddress)
             ->willReturn($encryptedData)
         ;
 
         $this->accountRepository
             ->expects(self::once())
             ->method('exists')
-            ->with('a', 'b', $encryptedData->emailAddressFullBlindIndex)
+            ->with('a', $encryptedData->usernameBlindIndex, $encryptedData->emailAddressFullBlindIndex)
             ->willReturn(false)
         ;
 
@@ -288,11 +292,13 @@ class RegistrationControllerTest extends TestCase
         $request = new Request();
         $registrationRequest = new RegistrationRequest(
             'a',
-            'b',
+            new HiddenString('b'),
             new HiddenString('c'),
             new HiddenString('d'),
         );
         $encryptedData = new AccountEncryptionResult(
+            new EncryptedString('encrypted b'),
+            new HashedString('username blind index'),
             new EncryptedString('encrypted c'),
             new HashedString('email blind index'),
         );
@@ -307,14 +313,14 @@ class RegistrationControllerTest extends TestCase
         $this->encryptor
             ->expects(self::once())
             ->method('encrypt')
-            ->with('a', $registrationRequest->emailAddress)
+            ->with('a', $registrationRequest->username, $registrationRequest->emailAddress)
             ->willReturn($encryptedData)
         ;
 
         $this->accountRepository
             ->expects(self::once())
             ->method('exists')
-            ->with('a', 'b', $encryptedData->emailAddressFullBlindIndex)
+            ->with('a', $encryptedData->usernameBlindIndex, $encryptedData->emailAddressFullBlindIndex)
             ->willReturn(false)
         ;
 
@@ -332,7 +338,7 @@ class RegistrationControllerTest extends TestCase
                 self::callback(
                     function (Account $account): bool {
                         self::assertSame('a', $account->getId());
-                        self::assertSame('b', $account->getUsername());
+                        self::assertSame('encrypted b', $account->getUsername()->value);
                         self::assertSame('encrypted c', $account->getEmailAddress()->value);
                         self::assertSame('hashed d', $account->getPassword()->value);
                         self::assertSame(['ROLE_USER'], $account->getClaims());

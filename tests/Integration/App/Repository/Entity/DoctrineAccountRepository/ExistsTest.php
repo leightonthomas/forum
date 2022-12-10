@@ -25,10 +25,14 @@ class ExistsTest extends DoctrineAccountRepositoryTestCase
     ): void {
         $encryptionResult = self::getContainer()
             ->get(AccountEncryptor::class)
-            ->encrypt($id, new HiddenString($rawEmail))
+            ->encrypt($id, new HiddenString($username), new HiddenString($rawEmail))
         ;
 
-        $result = $this->repository->exists($id, $username, $encryptionResult->emailAddressFullBlindIndex);
+        $result = $this->repository->exists(
+            $id,
+            $encryptionResult->usernameBlindIndex,
+            $encryptionResult->emailAddressFullBlindIndex,
+        );
 
         self::assertSame($expected, $result);
     }

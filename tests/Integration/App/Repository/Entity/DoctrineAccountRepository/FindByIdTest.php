@@ -21,7 +21,7 @@ class FindByIdTest extends DoctrineAccountRepositoryTestCase
 
         self::assertInstanceOf(Account::class, $result);
         self::assertSame($id, $result->getId());
-        self::assertSame('bob', $result->getUsername());
+        self::assertSame(['ROLE_USER'], $result->getClaims());
     }
 
     #[Test]

@@ -27,12 +27,12 @@ use SodiumException;
 /**
  * @psalm-type _EncryptedData = array{
  *     0: array{
+ *         username: string,
  *         email_address: string,
  *     },
  *     1: array{
- *         email_address_bidx: array{
- *             value: string,
- *         },
+ *         username_bidx: array{value: string},
+ *         email_address_bidx: array{value: string},
  *     },
  * }
  */
@@ -57,13 +57,14 @@ class AccountEncryptor
 
     /**
      * @param string $id
+     * @param HiddenString $username
      * @param HiddenString $emailAddress
      *
      * @return AccountEncryptionResult
      *
      * @throws EncryptionFailure
      */
-    public function encrypt(string $id, HiddenString $emailAddress): AccountEncryptionResult
+    public function encrypt(string $id, HiddenString $username, HiddenString $emailAddress): AccountEncryptionResult
     {
         $row = $this->getRowConfig();
 
@@ -72,6 +73,7 @@ class AccountEncryptor
             $encryptedData = $row->prepareRowForStorage(
                 [
                     'id' => $id,
+                    'username' => $username->getString(),
                     'email_address' => $emailAddress->getString(),
                 ],
             );
@@ -80,6 +82,8 @@ class AccountEncryptor
         }
 
         return new AccountEncryptionResult(
+            new EncryptedString($encryptedData[0]['username']),
+            new HashedString($encryptedData[1]['username_bidx']['value']),
             new EncryptedString($encryptedData[0]['email_address']),
             new HashedString($encryptedData[1]['email_address_bidx']['value']),
         );
@@ -96,11 +100,13 @@ class AccountEncryptor
     {
         $row = new EncryptedRow($this->cipherSweet, 'account');
         $row->addTextField('email_address', 'id');
+        $row->addTextField('username', 'id');
 
         try {
             $decryptedData = $row->decryptRow(
                 [
                     'id' => $account->getId(),
+                    'username' => $account->getUsername()->value,
                     'email_address' => $account->getEmailAddress()->value,
                 ],
             );
@@ -112,8 +118,11 @@ class AccountEncryptor
 
         /** @var string $emailAddress */
         $emailAddress = $decryptedData['email_address'];
+        /** @var string $username */
+        $username = $decryptedData['username'];
 
         return new AccountDecryptionResult(
+            new HiddenString($username),
             new HiddenString($emailAddress),
         );
     }
@@ -124,9 +133,14 @@ class AccountEncryptor
             $this->row = new EncryptedRow($this->cipherSweet, 'account');
             $this->row->addTextField('id');
             $this->row->addTextField('email_address', 'id');
+            $this->row->addTextField('username', 'id');
             $this->row->addBlindIndex(
                 'email_address',
                 new BlindIndex('email_address_bidx', [new Lowercase()]),
+            );
+            $this->row->addBlindIndex(
+                'username',
+                new BlindIndex('username_bidx', [new Lowercase()]),
             );
         }
 

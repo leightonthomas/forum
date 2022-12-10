@@ -19,18 +19,18 @@ class SaveTest extends DoctrineAccountRepositoryTestCase
     public function itWillCorrectlySaveAnAccount(): void
     {
         $id = 'dc4a5bd6-fe6e-47c7-914a-d5817de7b58e';
-        $rawEmail = 'test@example.com';
 
         $hasher = self::getContainer()->get('crypto.hashing.entity.account.password_hashing_method');
 
         $encryptionResult = self::getContainer()
             ->get(AccountEncryptor::class)
-            ->encrypt($id, new HiddenString($rawEmail))
+            ->encrypt($id, new HiddenString('bob'), new HiddenString('test@example.com'))
         ;
 
         $account = new Account(
             $id,
-            'bob',
+            $encryptionResult->username,
+            $encryptionResult->usernameBlindIndex,
             $encryptionResult->emailAddress,
             $encryptionResult->emailAddressFullBlindIndex,
             $hasher->hash(new HiddenString('apassword')),
@@ -48,7 +48,7 @@ class SaveTest extends DoctrineAccountRepositoryTestCase
         self::assertInstanceOf(Account::class, $result);
 
         self::assertSame($id, $result->getId());
-        self::assertSame('bob', $result->getUsername());
+        self::assertSame($encryptionResult->username->value, $result->getUsername()->value);
         self::assertSame($encryptionResult->emailAddress->value, $result->getEmailAddress()->value);
         self::assertSame(['ROLE_ADMIN'], $result->getClaims());
         self::assertTrue($hasher->verify(new HiddenString('apassword'), $result->getPassword()));

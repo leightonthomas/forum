@@ -10,6 +10,8 @@ use App\Model\Primitive\HashedString;
 class AccountEncryptionResult
 {
     public function __construct(
+        public readonly EncryptedString $username,
+        public readonly HashedString $usernameBlindIndex,
         public readonly EncryptedString $emailAddress,
         public readonly HashedString $emailAddressFullBlindIndex,
     ) { }

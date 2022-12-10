@@ -10,7 +10,7 @@ readonly class RegistrationRequest
 {
     public function __construct(
         public readonly string $id,
-        public readonly string $username,
+        public readonly HiddenString $username,
         public readonly HiddenString $emailAddress,
         public readonly HiddenString $password,
     ) { }

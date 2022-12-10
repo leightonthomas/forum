@@ -103,7 +103,7 @@ class RegistrationRequestTransformer
 
         return new RegistrationRequest(
             $id,
-            $username,
+            new HiddenString($username),
             new HiddenString(strtolower($emailAddress)),
             new HiddenString($id . $password),
         );

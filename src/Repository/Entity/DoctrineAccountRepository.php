@@ -26,16 +26,16 @@ class DoctrineAccountRepository extends EntityRepository implements AccountRepos
         return $this->find($id);
     }
 
-    public function exists(string $id, string $username, HashedString $emailAddressBlindIndex): bool
+    public function exists(string $id, HashedString $usernameBlindIndex, HashedString $emailAddressBlindIndex): bool
     {
         /** @var Account|null $result */
         $result = $this->createQueryBuilder('a')
             ->select('a')
             ->where('a.id = :id')
-            ->orWhere('a.username = :username')
+            ->orWhere('a.usernameBlindIndex = :username')
             ->orWhere('a.emailAddressBlindIndex = :email')
             ->setParameter('id', $id)
-            ->setParameter('username', $username)
+            ->setParameter('username', $usernameBlindIndex)
             ->setParameter('email', $emailAddressBlindIndex)
             ->setMaxResults(1)
             ->getQuery()

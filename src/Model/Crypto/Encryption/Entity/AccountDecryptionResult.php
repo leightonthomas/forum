@@ -9,6 +9,7 @@ use ParagonIE\HiddenString\HiddenString;
 class AccountDecryptionResult
 {
     public function __construct(
+        public readonly HiddenString $username,
         public readonly HiddenString $emailAddress,
     ) { }
 }

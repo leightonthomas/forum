@@ -36,12 +36,17 @@ class AccountEncryptorTest extends TestCase
     #[Test]
     public function itWillEncryptDataCorrectly(): void
     {
-        $result = $this->encryptor->encrypt('a', new HiddenString('b'));
+        $result = $this->encryptor->encrypt('a', new HiddenString('c'), new HiddenString('b'));
 
+        self::assertStringStartsWith('nacl:', $result->username->value);
         self::assertStringStartsWith('nacl:', $result->emailAddress->value);
         self::assertSame(
             '414a5615fed0dd671846a7bb22c4d9f133fb8ad2718c8c345daf2253cc0f74d9',
             $result->emailAddressFullBlindIndex->value,
+        );
+        self::assertSame(
+            'aad9c0d9f79f04ecb01b3a606434c736e03f6a9f5da24dbba862012777ef7d6d',
+            $result->usernameBlindIndex->value,
         );
     }
 
@@ -50,7 +55,8 @@ class AccountEncryptorTest extends TestCase
     {
         $account = new Account(
             'a',
-            'username',
+            new EncryptedString('nacl:m9qRhAgob4F1745A24Z131UExsN0NTkeS2cjGpsf8ho1CCc3ACuF1ZI='),
+            new HashedString('aad9c0d9f79f04ecb01b3a606434c736e03f6a9f5da24dbba862012777ef7d6d'),
             new EncryptedString('nacl:OurRkQPQohVIhfYkzNQ37YpUwb7olMhj6FN0oJt9QSVI809_5RULv4Y='),
             new HashedString('414a5615fed0dd671846a7bb22c4d9f133fb8ad2718c8c345daf2253cc0f74d9'),
             new HashedString('c'),

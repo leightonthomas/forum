@@ -52,6 +52,7 @@ class RegistrationController
         try {
             $encryptedAccountData = $this->encryptor->encrypt(
                 $registrationRequest->id,
+                $registrationRequest->username,
                 $registrationRequest->emailAddress,
             );
         } catch (EncryptionFailure $e) {
@@ -66,7 +67,7 @@ class RegistrationController
         if (
             $this->accountRepository->exists(
                 $registrationRequest->id,
-                $registrationRequest->username,
+                $encryptedAccountData->usernameBlindIndex,
                 $encryptedAccountData->emailAddressFullBlindIndex,
             )
         ) {
@@ -78,7 +79,8 @@ class RegistrationController
 
         $account = new Account(
             $registrationRequest->id,
-            $registrationRequest->username,
+            $encryptedAccountData->username,
+            $encryptedAccountData->usernameBlindIndex,
             $encryptedAccountData->emailAddress,
             $encryptedAccountData->emailAddressFullBlindIndex,
             $this->hasher->hash($registrationRequest->password),

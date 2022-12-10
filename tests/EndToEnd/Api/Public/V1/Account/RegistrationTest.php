@@ -43,7 +43,6 @@ class RegistrationTest extends ApiTestCase
         ;
 
         self::assertInstanceOf(Account::class, $account);
-        self::assertSame('Bob', $account->getUsername());
         self::assertSame('90632a8b-84a8-43ee-a5d7-3b95a18675fc', $account->getId());
 
         $accountEncryptor = self::getContainer()->get(AccountEncryptor::class);
@@ -51,6 +50,7 @@ class RegistrationTest extends ApiTestCase
 
         $decryptedAccountData = $accountEncryptor->decrypt($account);
 
+        self::assertSame('Bob', $decryptedAccountData->username->getString());
         self::assertSame('test@example.com', $decryptedAccountData->emailAddress->getString());
         self::assertTrue(
             $passwordHasher->verify(

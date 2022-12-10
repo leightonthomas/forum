@@ -14,12 +14,12 @@ interface AccountRepository
      * Check whether an account already exists with ONE OF the provided values.
      *
      * @param string $id
-     * @param string $username
+     * @param HashedString $usernameBlindIndex
      * @param HashedString $emailAddressBlindIndex
      *
      * @return bool
      */
-    public function exists(string $id, string $username, HashedString $emailAddressBlindIndex): bool;
+    public function exists(string $id, HashedString $usernameBlindIndex, HashedString $emailAddressBlindIndex): bool;
 
     /**
      * Persist & flush the given {@see Account}.

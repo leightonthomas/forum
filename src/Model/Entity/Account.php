@@ -11,15 +11,23 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 
 #[ORM\Entity(repositoryClass: DoctrineAccountRepository::class)]
-#[ORM\Table(indexes: [new Index(columns: ['email_address_bidx'], name: 'email_address_bidx_idx')])]
+#[ORM\Table(
+    indexes: [
+        new Index(columns: ['email_address_bidx'], name: 'email_address_bidx_idx'),
+        new Index(columns: ['username_bidx'], name: 'username_bidx_idx'),
+    ],
+)]
 final class Account implements Persistent
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     private string $id;
 
-    #[ORM\Column(type: 'string', length: 30, unique: true)]
-    private string $username;
+    #[ORM\Column(type: 'encrypted_string')]
+    private EncryptedString $username;
+
+    #[ORM\Column(name: 'username_bidx', type: 'hashed_string', unique: true)]
+    private HashedString $usernameBlindIndex;
 
     #[ORM\Column(type: 'encrypted_string')]
     private EncryptedString $emailAddress;
@@ -34,7 +42,8 @@ final class Account implements Persistent
 
     public function __construct(
         string $id,
-        string $username,
+        EncryptedString $username,
+        HashedString $usernameBlindIndex,
         EncryptedString $emailAddress,
         HashedString $emailAddressBlindIndex,
         HashedString $password,
@@ -42,15 +51,17 @@ final class Account implements Persistent
     ) {
         $this->id = $id;
         $this->username = $username;
+        $this->usernameBlindIndex = $usernameBlindIndex;
         $this->emailAddress = $emailAddress;
         $this->emailAddressBlindIndex = $emailAddressBlindIndex;
         $this->password = $password;
         $this->claims = $claims;
     }
 
-    public function changeUsername(string $newUsername): void
+    public function changeUsername(EncryptedString $username, HashedString $blindIndex): void
     {
-        $this->username = $newUsername;
+        $this->username = $username;
+        $this->usernameBlindIndex = $blindIndex;
     }
 
     public function changePassword(HashedString $hashedPassword): void
@@ -69,7 +80,7 @@ final class Account implements Persistent
         return $this->id;
     }
 
-    public function getUsername(): string
+    public function getUsername(): EncryptedString
     {
         return $this->username;
     }

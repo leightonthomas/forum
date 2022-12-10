@@ -15,13 +15,19 @@ return static function (ContainerInterface $container): array {
 
     $ericaEncrypted = $encryptor->encrypt(
         '4231002c-a796-41aa-90b8-947d12a49114',
+        new HiddenString('erica'),
         new HiddenString('ERICA@example.com'),
     );
-    $bobEncrypted = $encryptor->encrypt('9afbee8b-303f-4582-a260-b6552810bd33', new HiddenString('Bob@ExAmPlE.com'));
+    $bobEncrypted = $encryptor->encrypt(
+        '9afbee8b-303f-4582-a260-b6552810bd33',
+        new HiddenString('bob'),
+        new HiddenString('Bob@ExAmPlE.com'),
+    );
 
     $erica = new Account(
         '4231002c-a796-41aa-90b8-947d12a49114',
-        'erica',
+        $ericaEncrypted->username,
+        $ericaEncrypted->usernameBlindIndex,
         $ericaEncrypted->emailAddress,
         $ericaEncrypted->emailAddressFullBlindIndex,
         $hashedPassword,
@@ -30,7 +36,8 @@ return static function (ContainerInterface $container): array {
 
     $bob = new Account(
         '9afbee8b-303f-4582-a260-b6552810bd33',
-        'bob',
+        $bobEncrypted->username,
+        $bobEncrypted->usernameBlindIndex,
         $bobEncrypted->emailAddress,
         $bobEncrypted->emailAddressFullBlindIndex,
         $hashedPassword,
