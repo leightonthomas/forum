@@ -32,12 +32,7 @@ class ViewController
         private readonly ThreadEncryptor $threadEncryptor,
     ) { }
 
-    // TODO: test remaining stuff added in this PR
     // TODO: add e2e test for subforum list (+ unit for controller if necessary?)
-
-    // TODO: then... new stuff
-    //       editing a post adds a ThreadEvent AND adds a new PostHistory
-    //       the post content should be stored in latest PostHistory
 
     #[Route(path: '/public/v1/subforum/{subforum}', name: 'public_subforum_view', methods: ['GET'])]
     #[JsonRoute]
