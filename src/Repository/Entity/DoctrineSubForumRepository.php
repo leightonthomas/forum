@@ -33,9 +33,6 @@ class DoctrineSubForumRepository extends EntityRepository implements SubForumRep
             return null;
         }
 
-        /** @var SubForum|null $result */
-        $result = $this->find($id);
-
-        return $result;
+        return $this->find($id);
     }
 }
