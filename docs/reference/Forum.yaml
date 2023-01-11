@@ -142,6 +142,18 @@ paths:
                   password: some fake password
         description: Post the necessary fields for the API to create a new user.
       description: Register a new Account.
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Content-Type
+          description: application/json
+          required: true
+        - schema:
+            type: string
+          in: header
+          description: application/json
+          name: Accept
     parameters: []
   /public/v1/subforum:
     get:
@@ -174,3 +186,116 @@ paths:
                       name: Entertainment
       operationId: public_subforum_list
       description: List all SubForums.
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Content-Type
+          description: application/json
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: Accept
+          description: application/json
+          required: true
+  '/public/v1/subforum/{subforum}':
+    parameters:
+      - schema:
+          type: string
+          format: uuid
+        name: subforum
+        in: path
+        required: true
+        description: The ID of the SubForum.
+    get:
+      summary: View SubForum
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  threads:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: '2022-12-15T14:55:59+00:00'
+                        author:
+                          type: object
+                          required:
+                            - id
+                            - username
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            username:
+                              type: string
+                      required:
+                        - id
+                        - name
+                        - createdAt
+                        - author
+                required:
+                  - id
+                  - name
+                  - threads
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: public_subforum_view
+      description: View a SubForum.
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Content-Type
+          description: application/json
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: Accept
+          description: application/json
+          required: true
+        - schema:
+            type: integer
+            default: 1
+            minimum: 1
+            maximum: 10000
+            multipleOf: 1
+            format: int32
+            example: 1
+          in: query
+          name: page
+          description: The page of Threads to view.
+        - schema:
+            type: integer
+            default: 25
+            minimum: 1
+            maximum: 50
+            multipleOf: 1
+            format: int32
+            example: 25
+          in: query
+          name: limit
+          description: The number of Threads to display per page.

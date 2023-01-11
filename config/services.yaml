@@ -19,10 +19,23 @@ services:
             - '@Psr\Log\LoggerInterface'
             - '%env(CIPHERSWEET_KEY)%'
 
+    App\Crypto\Encryption\Entity\Thread\ThreadEncryptor:
+        arguments:
+            - '@Psr\Log\LoggerInterface'
+            - '%env(CIPHERSWEET_KEY)%'
+
     App\Crypto\Hashing\BcryptPasswordHashingMethod: ~
 
     crypto.hashing.entity.account.password_hashing_method:
         alias: 'App\Crypto\Hashing\BcryptPasswordHashingMethod'
+
+    App\Model\Repository\Entity\Thread\ThreadRepository:
+        alias: 'App\Repository\Entity\Thread\DoctrineThreadRepository'
+
+    App\Repository\Entity\Thread\DoctrineThreadRepository:
+        factory: ['@doctrine.orm.default_entity_manager', 'getRepository']
+        arguments:
+            - 'App\Model\Entity\Thread\Thread'
 
     App\Model\Repository\Entity\AccountRepository:
         alias: 'App\Repository\Entity\DoctrineAccountRepository'
@@ -53,6 +66,16 @@ services:
             - '@App\Crypto\Encryption\Entity\AccountEncryptor'
             - '@crypto.hashing.entity.account.password_hashing_method'
             - '@App\Model\Repository\Entity\AccountRepository'
+        tags:
+            - controller.service_arguments
+
+    App\Controller\Public\V1\SubForum\ViewController:
+        arguments:
+            - '@App\Model\Repository\Entity\Thread\ThreadRepository'
+            - '@App\Crypto\Encryption\Entity\AccountEncryptor'
+            - '@Psr\Log\LoggerInterface'
+            - '@App\Model\Repository\Entity\SubForumRepository'
+            - '@App\Crypto\Encryption\Entity\Thread\ThreadEncryptor'
         tags:
             - controller.service_arguments
 

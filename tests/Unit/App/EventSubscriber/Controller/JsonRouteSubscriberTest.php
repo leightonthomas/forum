@@ -51,7 +51,7 @@ class JsonRouteSubscriberTest extends TestCase
     }
 
     #[Test]
-    public function itWillNotAlterControllerIfControllerNotAnObject(): void
+    public function itWillNotRunJsonRouteControllerIfControllerNotAnObject(): void
     {
         $request = new Request();
         $event = new ControllerEvent($this->kernel, fn() => new JsonResponse(['text' => 'hi']), $request, null);
@@ -70,7 +70,7 @@ class JsonRouteSubscriberTest extends TestCase
     }
 
     #[Test]
-    public function itWillNotAlterControllerIfControllerDoesNotHaveInvokeMethod(): void
+    public function itWillNotRunJsonRouteControllerIfControllerDoesNotHaveInvokeMethod(): void
     {
         $originalController = new class {
             public function route(): JsonResponse
@@ -95,7 +95,7 @@ class JsonRouteSubscriberTest extends TestCase
     }
 
     #[Test]
-    public function itWillNotAlterControllerIfControllerInvokeMethodDoesNotHaveJsonRouteAttribute(): void
+    public function itWillNotRunJsonRouteControllerIfControllerInvokeMethodDoesNotHaveJsonRouteAttribute(): void
     {
         $originalController = new class {
             public function __invoke(): JsonResponse
@@ -120,7 +120,7 @@ class JsonRouteSubscriberTest extends TestCase
     }
 
     #[Test]
-    public function ifJsonRouteControllerReturnsResponseItWillNotCallOriginalController(): void
+    public function ifJsonRouteControllerReturnsResponseItWillModifyEventController(): void
     {
         $originalController = new class {
             public bool $called = false;
@@ -153,46 +153,13 @@ class JsonRouteSubscriberTest extends TestCase
     }
 
     #[Test]
-    public function ifJsonRouteControllerReturnsNullItWillCallOriginalController(): void
+    public function ifJsonRouteControllerReturnsNullItWillNotModifyEventController(): void
     {
         $originalController = new class {
             public bool $called = false;
 
             #[JsonRoute]
             public function __invoke(Request $request, string $text): JsonResponse
-            {
-                $this->called = true;
-
-                return new JsonResponse(['text' => $text]);
-            }
-        };
-        $request = new Request();
-        $event = new ControllerEvent($this->kernel, $originalController, $request, null);
-
-        $this->controller
-            ->expects(self::once())
-            ->method('route')
-            ->with($request)
-            ->willReturn(null)
-        ;
-
-        $this->subscriber->onController($event);
-
-        $result = $event->getController()($request, 'hi');
-
-        self::assertInstanceOf(JsonResponse::class, $result);
-        self::assertSame('{"text":"hi"}', $result->getContent());
-        self::assertTrue($originalController->called);
-    }
-
-    #[Test]
-    public function itWillNotPassRequestIfFirstArgumentOfOriginalControllerIsNotRequest(): void
-    {
-        $originalController = new class {
-            public bool $called = false;
-
-            #[JsonRoute]
-            public function __invoke(string $text): JsonResponse
             {
                 $this->called = true;
 

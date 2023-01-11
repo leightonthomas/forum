@@ -15,6 +15,7 @@
         "leightonthomas/validation": "^0.3.0",
         "paragonie/ciphersweet": "^2",
         "paragonie/hidden-string": "^2.0",
+        "psr/clock": "^1.0",
         "ramsey/uuid-doctrine": "^1.8",
         "roave/security-advisories": "dev-latest",
         "symfony/console": "6.1.*",
@@ -80,8 +81,8 @@
     },
     "require-dev": {
         "bentools/cartesian-product": "^1.4",
+        "brick/varexporter": "^0.3.7",
         "doctrine/data-fixtures": "^1.5",
-        "guzzlehttp/guzzle": "^7.5",
         "phpunit/phpunit": "^10",
         "psalm/phar": "^5.1",
         "symfony/browser-kit": "6.1.*",

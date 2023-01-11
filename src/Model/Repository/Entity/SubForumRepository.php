@@ -12,4 +12,6 @@ interface SubForumRepository
      * @return list<SubForum>
      */
     public function list(): array;
+
+    public function findById(string $id): ?SubForum;
 }

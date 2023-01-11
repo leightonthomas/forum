@@ -30,6 +30,19 @@ abstract class ApiTestCase extends KernelTestCase
         $this->client = self::getContainer()->get('test.client');
     }
 
+    public function get(string $uri, array $queryParameters = []): array
+    {
+        $server = [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
+        ];
+
+        return [
+            'crawler' => $this->client->request('GET', $uri, $queryParameters, [], $server),
+            'response' => $this->client->getInternalResponse(),
+        ];
+    }
+
     /**
      * @param string $uri
      * @param array $body

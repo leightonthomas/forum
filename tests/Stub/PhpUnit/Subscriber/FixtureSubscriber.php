@@ -133,7 +133,10 @@ class FixtureSubscriber implements PreparedSubscriber
 
         $purger = new ORMPurger($entityManager);
         $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
+
+        $entityManager->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 0');
         $purger->purge();
+        $entityManager->getConnection()->executeQuery('SET FOREIGN_KEY_CHECKS = 1');
 
         $fixtureResult = $fixtureCallable($container);
         if (! is_array($fixtureResult)) {

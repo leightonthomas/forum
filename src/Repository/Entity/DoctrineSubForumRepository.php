@@ -7,6 +7,7 @@ namespace App\Repository\Entity;
 use App\Model\Entity\SubForum;
 use App\Model\Repository\Entity\SubForumRepository;
 use Doctrine\ORM\EntityRepository;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @extends EntityRepository<SubForum>
@@ -22,6 +23,18 @@ class DoctrineSubForumRepository extends EntityRepository implements SubForumRep
             ->getQuery()
             ->getResult()
         ;
+
+        return $result;
+    }
+
+    public function findById(string $id): ?SubForum
+    {
+        if (! Uuid::isValid($id)) {
+            return null;
+        }
+
+        /** @var SubForum|null $result */
+        $result = $this->find($id);
 
         return $result;
     }

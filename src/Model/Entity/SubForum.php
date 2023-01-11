@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DoctrineSubForumRepository::class)]
 #[ORM\Table]
-final class SubForum implements Persistent
+class SubForum implements Persistent
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -18,15 +18,25 @@ final class SubForum implements Persistent
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $name;
 
-    public function __construct(string $id, string $name)
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    private string $slug;
+
+    public function __construct(string $id, string $name, string $slug)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->slug = $slug;
     }
 
-    public function changeName(string $newName): void
+    public function getSlug(): string
     {
-        $this->name = $newName;
+        return $this->slug;
+    }
+
+    public function changeName(string $name, string $slug): void
+    {
+        $this->name = $name;
+        $this->slug = $slug;
     }
 
     public function getId(): string

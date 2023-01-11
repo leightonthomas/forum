@@ -6,6 +6,8 @@ namespace Tests\Stub\Attribute;
 
 use Attribute;
 
+// TODO move non-stub stuff to a PhpUnit directory outside stub
+
 #[Attribute(Attribute::TARGET_METHOD)]
 class Fixture
 {

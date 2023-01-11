@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\Index;
         new Index(columns: ['username_bidx'], name: 'username_bidx_idx'),
     ],
 )]
-final class Account implements Persistent
+class Account implements Persistent
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]

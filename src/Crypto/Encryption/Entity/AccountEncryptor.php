@@ -41,7 +41,6 @@ class AccountEncryptor
 {
     private readonly LoggerInterface $logger;
     private readonly CipherSweet $cipherSweet;
-    private ?EncryptedRow $row;
 
     public function __construct(
         LoggerInterface $logger,
@@ -49,7 +48,6 @@ class AccountEncryptor
     ) {
         $this->logger = $logger;
 
-        $this->row = null;
         $this->cipherSweet = new CipherSweet(
             new StringProvider($encryptionKey),
             new ModernCrypto(),
@@ -67,7 +65,18 @@ class AccountEncryptor
      */
     public function encrypt(string $id, HiddenString $username, HiddenString $emailAddress): AccountEncryptionResult
     {
-        $row = $this->getRowConfig();
+        $row = new EncryptedRow($this->cipherSweet, 'account');
+        $row->addTextField('id');
+        $row->addTextField('email_address', 'id');
+        $row->addTextField('username', 'id');
+        $row->addBlindIndex(
+            'email_address',
+            new BlindIndex('email_address_bidx', [new Lowercase(), new PaddingTransformer(255)]),
+        );
+        $row->addBlindIndex(
+            'username',
+            new BlindIndex('username_bidx', [new Lowercase(), new PaddingTransformer(255)]),
+        );
 
         try {
             /** @var _EncryptedData $encryptedData */
@@ -112,7 +121,7 @@ class AccountEncryptor
                 ],
             );
         } catch (CryptoOperationException|SodiumException $e) {
-            throw DecryptionFailure::because($e);
+            throw DecryptionFailure::because($account, $e);
         }
 
         $this->logger->notice("Account [{$account->getId()}] decrypted");
@@ -126,25 +135,5 @@ class AccountEncryptor
             new HiddenString($username),
             new HiddenString($emailAddress),
         );
-    }
-
-    private function getRowConfig(): EncryptedRow
-    {
-        if ($this->row === null) {
-            $this->row = new EncryptedRow($this->cipherSweet, 'account');
-            $this->row->addTextField('id');
-            $this->row->addTextField('email_address', 'id');
-            $this->row->addTextField('username', 'id');
-            $this->row->addBlindIndex(
-                'email_address',
-                new BlindIndex('email_address_bidx', [new Lowercase(), new PaddingTransformer(255)]),
-            );
-            $this->row->addBlindIndex(
-                'username',
-                new BlindIndex('username_bidx', [new Lowercase(), new PaddingTransformer(255)]),
-            );
-        }
-
-        return $this->row;
     }
 }
